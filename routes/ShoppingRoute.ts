@@ -1,20 +1,28 @@
 import express, { Request, Response, NextFunction } from 'express';
+import {
+  GetFoodAvailability,
+  GetFoodIn30Min,
+  GetFoods,
+  GetTopRestaurants,
+  RestaurantById,
+  SearchFoods,
+} from '../controllers';
 
 const router = express.Router();
 
 // Food Availabaility
-router.get('/:pincode')
+router.get('/:pincode', GetFoodAvailability);
 
 // Top Restaurants
-router.get('/top-restaurants/:pincode')
+router.get('/top-restaurants/:pincode', GetTopRestaurants);
 
 // Food available in 30 mins
-router.get('/food-in-30-min/:pincode')
+router.get('/food-in-30-min/:pincode', GetFoodIn30Min);
 
 // search Foods
-router.get('/search/:pincode')
+router.get('/search/:pincode', SearchFoods);
 
 // find restaurants by id
-router.get('restaurant/:id')
+router.get('restaurant/:id', RestaurantById);
 
-export { router as AdminRoute };
+export { router as ShoppingRoute };
