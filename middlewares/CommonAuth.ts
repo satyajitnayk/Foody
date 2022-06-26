@@ -20,7 +20,7 @@ export const Authenticate = async (
     next();
   } else {
     return res.json({
-      message: 'User not authorized',
+      message: 'user not authorized',
     });
   }
 };

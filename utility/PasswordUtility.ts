@@ -23,7 +23,7 @@ export const ValidatePassword = async (
   );
 };
 
-export const GenerateSignature = (payload: VendorPayload) => {
+export const GenerateSignature = (payload: AuthPayload) => {
   return jwt.sign(payload, JWT_SECRET ?? '', {
     expiresIn: '1d',
   });

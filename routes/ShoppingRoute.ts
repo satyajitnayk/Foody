@@ -1,4 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
+const router = express.Router();
+
 import {
   GetFoodAvailability,
   GetFoodIn30Min,
@@ -7,8 +9,6 @@ import {
   RestaurantById,
   SearchFoods,
 } from '../controllers';
-
-const router = express.Router();
 
 // Food Availabaility
 router.get('/:pincode', GetFoodAvailability);
