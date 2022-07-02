@@ -27,3 +27,20 @@ export interface VendorPayload {
   name: string;
   foodType: [string];
 }
+
+export interface CreateOfferInput {
+  offerType: string; //VENDOR // GENERIC
+  vendors: [any]; // [vendorIds...]
+  title: string;
+  description: string;
+  minValue: number;
+  offerAmount: number;
+  startValidity: Date;
+  endValidity: Date;
+  promocode: string;
+  promoType: string; //USER //ALL //BANK //CARD
+  bank: [any];
+  bins: [any];
+  pincode: string;
+  isActive: boolean;
+}

@@ -1,6 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-import { CreateFoodInput, EditVendorInput, VendorLoginInput } from '../dto';
-import { Food, Order } from '../models';
+import {
+  CreateFoodInput,
+  CreateOfferInput,
+  EditVendorInput,
+  VendorLoginInput,
+} from '../dto';
+import { Food, Offer, Order } from '../models';
 import { GenerateSignature, ValidatePassword } from '../utility';
 import { FindVendor } from './AdminController';
 
@@ -243,5 +248,143 @@ export const ProcessOrder = async (
   }
   return res.json({
     message: 'Order not found',
+  });
+};
+
+export const GetOffers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const user = req.user;
+
+  if (user) {
+    let currentOffers = [];
+    const offers = await Offer.find().populate('vendors');
+    if (offers) {
+      offers.map((offer) => {
+        offer.vendors.map((vendor) => {
+          if (vendor._id.toString() === user._id.toString()) {
+            currentOffers.push(offer);
+          }
+        });
+
+        if (offer.offerType == 'GENERIC') {
+          currentOffers.push(offer);
+        }
+      });
+    }
+    return res.status(200).json(currentOffers);
+  }
+
+  return res.json({
+    message: 'Offers not available!',
+  });
+};
+
+export const AddOffer = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const user = req.user;
+
+  if (user) {
+    const {
+      bank,
+      bins,
+      description,
+      endValidity,
+      isActive,
+      minValue,
+      offerAmount,
+      offerType,
+      pincode,
+      promoType,
+      promocode,
+      startValidity,
+      title,
+    } = <CreateOfferInput>req.body;
+
+    // check if vendor is valid
+
+    const vendor = await FindVendor(user._id);
+    if (vendor) {
+      const offer = await Offer.create({
+        bank: bank,
+        bins: bins,
+        description: description,
+        endValidity: endValidity,
+        isActive: isActive,
+        minValue: minValue,
+        offerAmount: offerAmount,
+        offerType: offerType,
+        pincode: pincode,
+        promoType: promoType,
+        promocode: promocode,
+        startValidity: startValidity,
+        title: title,
+        vendors: [vendor],
+      });
+
+      return res.status(200).json(offer);
+    }
+  }
+  return res.json({
+    message: 'Offer not created',
+  });
+};
+
+export const EditOffer = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const user = req.user;
+  const offerId = req.params.id;
+  if (user) {
+    const {
+      bank,
+      bins,
+      description,
+      endValidity,
+      isActive,
+      minValue,
+      offerAmount,
+      offerType,
+      pincode,
+      promoType,
+      promocode,
+      startValidity,
+      title,
+    } = <CreateOfferInput>req.body;
+
+    const currentOffer = await Offer.findById(offerId);
+    if (currentOffer) {
+      const vendor = await FindVendor(user._id);
+
+      if (vendor) {
+        currentOffer.bank = bank;
+        currentOffer.bins = bins;
+        currentOffer.description = description;
+        currentOffer.endValidity = endValidity;
+        currentOffer.isActive = isActive;
+        currentOffer.minValue = minValue;
+        currentOffer.offerAmount = offerAmount;
+        currentOffer.offerType = offerType;
+        currentOffer.pincode = pincode;
+        currentOffer.promoType = promoType;
+        currentOffer.promocode = promocode;
+        currentOffer.startValidity = startValidity;
+        currentOffer.title = title;
+
+        const result = await currentOffer.save();
+
+        return res.status(200).json(result);
+      }
+    }
+  }
+  return res.json({
+    message: 'Unable to edit offer',
   });
 };
