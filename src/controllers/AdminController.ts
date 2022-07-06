@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { CreateVendorInput } from '../dto';
-import { Vendor } from '../models';
+import { DeliveryUser, Transaction, Vendor } from '../models';
 import { GeneratePasswordHash, GenerateSalt } from '../utility';
 
 // Generic findVendor function
@@ -54,6 +54,9 @@ export const CreateVendor = async (
     rating: 0,
     serviceAvailable: false,
     coverImages: [],
+    foods: [],
+    lat: 0,
+    lng: 0,
   });
 
   return res.json(createdVendor);
@@ -85,5 +88,67 @@ export const GetVendorById = async (
   }
   return res.json({
     message: 'No vendor found',
+  });
+};
+
+export const GetTransactions = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const transactions = await Transaction.find();
+
+  if (transactions) {
+    return res.json(transactions);
+  }
+  return res.json({
+    message: 'transactions not available',
+  });
+};
+
+export const GetTransactionById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const txnId = req.params.id;
+  const transaction = await Transaction.findById(txnId);
+
+  if (transaction) {
+    return res.json(transaction);
+  }
+  return res.json({
+    message: 'transaction not available',
+  });
+};
+
+export const VerifyDeliveryUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { _id, status } = req.body;
+  const profile = await DeliveryUser.findById(_id);
+  if (profile) {
+    profile.verified = status;
+    await profile.save();
+    return res.status(200).json(profile);
+  }
+  return res.status(400).json({
+    message: 'User not found',
+  });
+};
+
+export const GetDeliveryUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const deliveryUsers = await DeliveryUser.find();
+  if (deliveryUsers) {
+    return res.json(deliveryUsers);
+  }
+  return res.status(400).json({
+    message: 'No delivery users found',
   });
 };

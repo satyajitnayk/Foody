@@ -5,6 +5,7 @@ import {
   GetFoodAvailability,
   GetFoodIn30Min,
   GetFoods,
+  GetOffersByPincode,
   GetTopRestaurants,
   RestaurantById,
   SearchFoods,
@@ -21,6 +22,9 @@ router.get('/food-in-30-min/:pincode', GetFoodIn30Min);
 
 // search Foods
 router.get('/search/:pincode', SearchFoods);
+
+// Find Offers
+router.get('/offers/:pincode', GetOffersByPincode);
 
 // find restaurants by id
 router.get('/restaurant/:id', RestaurantById);
